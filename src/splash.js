@@ -2,8 +2,14 @@
 // Só mostra na página inicial (index.html)
 
 function mostrarSplashScreen() {
-  // Só mostra se estiver na página inicial
-  if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+  // Detecta se está na página inicial
+  const pathname = window.location.pathname;
+  const filename = pathname.split('/').pop();
+  
+  // Mostra splash se estiver na raiz ou em index.html
+  const isPaginaInicial = filename === '' || filename === 'index.html' || pathname.endsWith('/ConnectLifeEletronics/');
+  
+  if (isPaginaInicial) {
     const splash = document.createElement('div');
     splash.id = 'splash-screen';
     splash.innerHTML = `
