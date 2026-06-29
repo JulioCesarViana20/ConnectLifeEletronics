@@ -1,0 +1,29 @@
+{
+  "produtos": [
+    {
+      "id": "produto1",
+      "nome": "Iphone 16",
+      "preco": 4999,
+      "imagem": "img/iphone16(1).webp",
+      "descricao": "O iPhone 16 combina tecnologia de ponta com alto desempenho. Equipado com o novo chip da Apple, câmeras ainda mais inteligentes e recursos avançados de inteligência artificial, ele oferece uma experiência fluida para jogos, trabalho, fotos e vídeos, tudo isso com excelente autonomia de bateria.",
+      "especificacoes": "Chip A18 Pro | Câmera 48MP | Tela Super Retina XDR | 8GB RAM | Bateria 3582mAh"
+    },
+    {
+      "id": "produto2",
+      "nome": "Iphone 15",
+      "preco": 3499,
+      "imagem": "img/iphone15.webp",
+      "descricao": "O iPhone 15 traz um design moderno em alumínio e vidro com acabamento refinado, além da poderosa câmera principal de 48 MP para fotos com mais detalhes. Seu desempenho rápido, tela Super Retina XDR e porta USB-C tornam o aparelho ainda mais prático e versátil.",
+      "especificacoes": "Chip A17 Pro | Câmera 48MP | Tela Super Retina XDR | 6GB RAM | Bateria 3349mAh"
+    },
+    {
+      "id": "produto3",
+      "nome": "Iphone 14",
+      "preco": 3199,
+      "imagem": "img/iphone 14.webp",
+      "descricao": "O iPhone 14 oferece um excelente equilíbrio entre desempenho e qualidade. Equipado com uma câmera avançada, tela Super Retina XDR e bateria de longa duração, ele é ideal para quem busca velocidade, confiabilidade e uma experiência premium no dia a dia.",
+      "especificacoes": "Chip A15 Bionic | Câmera 12MP | Tela Super Retina XDR | 6GB RAM | Bateria 3240mAh"
+    }
+    
+  ]
+}
