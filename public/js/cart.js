@@ -205,7 +205,17 @@ function renderizarCarrinho() {
 async function finalizarCompra() {
   const carrinho = obterCarrinho();
   if (carrinho.length === 0) return;
-  
+
+  const btnCheckout = document.getElementById('btnCheckout');
+  const textoOriginal = btnCheckout ? btnCheckout.textContent : '';
+
+  if (btnCheckout) {
+    btnCheckout.disabled = true;
+    btnCheckout.textContent = 'Redirecionando...';
+  }
+
+  let redirecting = false;
+
   try {
     // Prepara os itens para o Mercado Pago
     const items = carrinho.map(item => ({
@@ -215,7 +225,7 @@ async function finalizarCompra() {
     }));
     
     // Envia para o servidor criar a preferência de pagamento
-    const response = await fetch('/criar-pagamento-carrinho', {
+    const response = await apiFetch('/criar-pagamento-carrinho', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -225,25 +235,41 @@ async function finalizarCompra() {
 
     const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(data.detalhes || data.error || "Erro ao processar pagamento");
+    }
+
     if (data.init_point) {
-      // Limpa o carrinho antes de redirecionar
+      redirecting = true;
       localStorage.removeItem(STORAGE_KEY);
       atualizarContadorCarrinho();
-      
-      // Redireciona para o Mercado Pago
-      window.location.href = data.init_point;
-    } else {
-      alert('Erro ao processar pagamento. Tente novamente.');
+      window.location.replace(data.init_point);
+      return;
     }
+
+    alert('Erro ao processar pagamento. Tente novamente.');
   } catch (erro) {
     console.error('Erro ao finalizar compra:', erro);
-    alert('Erro ao conectar com o servidor de pagamento.');
+    let msg = erro.message || 'Erro ao conectar com o servidor de pagamento.';
+
+    if (erro.name === 'AbortError') {
+      msg = 'Servidor demorou demais. Rode "npm start" e acesse http://localhost:3000';
+    } else if (msg === 'Failed to fetch') {
+      msg = 'Servidor offline. Rode "npm start" e acesse http://localhost:3000';
+    }
+
+    alert(msg);
+  } finally {
+    if (!redirecting && btnCheckout) {
+      btnCheckout.disabled = false;
+      btnCheckout.textContent = textoOriginal;
+    }
   }
 }
 
 // Direciona para a página do carrinho
 function irParaCarrinho() {
-  window.location.href = 'cart.html';
+  window.location.href = '/cart.html';
 }
 
 // Mostra notificação temporária
