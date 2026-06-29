@@ -67,6 +67,47 @@ app.post("/criar-pagamento", async (req, res) => {
     }
 });
 
+// 🛒 CRIAR PAGAMENTO DO CARRINHO (MÚLTIPLOS ITENS)
+app.post("/criar-pagamento-carrinho", async (req, res) => {
+    try {
+        const { items } = req.body;
+
+        if (!items || items.length === 0) {
+            return res.status(400).json({ error: "Carrinho vazio" });
+        }
+
+        const preference = new Preference(client);
+
+        const result = await preference.create({
+            body: {
+                items: items.map(item => ({
+                    title: item.title,
+                    quantity: item.quantity,
+                    unit_price: Number(item.unit_price),
+                    currency_id: "BRL",
+                })),
+
+                back_urls: {
+                    success: "http://localhost:3000/sucesso",
+                    failure: "http://localhost:3000/erro",
+                    pending: "http://localhost:3000/pendente",
+                },
+
+                auto_return: "approved",
+            },
+        });
+
+        res.json({
+            id: result.id,
+            init_point: result.init_point,
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao criar pagamento do carrinho" });
+    }
+});
+
 // páginas simples de retorno
 app.get("/sucesso", (req, res) => {
     res.send("Pagamento aprovado! ✅");

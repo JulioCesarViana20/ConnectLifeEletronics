@@ -201,30 +201,44 @@ function renderizarCarrinho() {
   document.getElementById('btnCheckout').addEventListener('click', finalizarCompra);
 }
 
-// Finaliza a compra
-function finalizarCompra() {
+// Finaliza a compra com Mercado Pago
+async function finalizarCompra() {
   const carrinho = obterCarrinho();
   if (carrinho.length === 0) return;
   
-  const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
-  const itens = carrinho.map(item => `${item.nome} (${item.quantidade}x)`).join(', ');
-  
-  // Redireciona para WhatsApp com o pedido
-  const mensagem = `Olá! Gostaria de fazer um pedido:\n\n${itens}\n\nTotal: R$ ${total.toLocaleString('pt-BR')}\n\nPor favor, confirme a disponibilidade e o melhor forma de pagamento.`;
-  const whatsappUrl = `https://wa.me/556282480408?text=${encodeURIComponent(mensagem)}`;
-  
-  // Limpa o carrinho após finalizar
-  localStorage.removeItem(STORAGE_KEY);
-  atualizarContadorCarrinho();
-  
-  // Abre o WhatsApp
-  window.open(whatsappUrl, '_blank');
-  
-  // Mostra mensagem de sucesso
-  setTimeout(() => {
-    alert('Pedido enviado com sucesso! Redirecionando para o WhatsApp...');
-    window.location.href = 'index.html';
-  }, 500);
+  try {
+    // Prepara os itens para o Mercado Pago
+    const items = carrinho.map(item => ({
+      title: item.nome,
+      quantity: item.quantidade,
+      unit_price: item.preco,
+    }));
+    
+    // Envia para o servidor criar a preferência de pagamento
+    const response = await fetch('/criar-pagamento-carrinho', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ items }),
+    });
+
+    const data = await response.json();
+
+    if (data.init_point) {
+      // Limpa o carrinho antes de redirecionar
+      localStorage.removeItem(STORAGE_KEY);
+      atualizarContadorCarrinho();
+      
+      // Redireciona para o Mercado Pago
+      window.location.href = data.init_point;
+    } else {
+      alert('Erro ao processar pagamento. Tente novamente.');
+    }
+  } catch (erro) {
+    console.error('Erro ao finalizar compra:', erro);
+    alert('Erro ao conectar com o servidor de pagamento.');
+  }
 }
 
 // Direciona para a página do carrinho
