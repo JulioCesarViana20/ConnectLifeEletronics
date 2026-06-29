@@ -1,54 +1,49 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+require("dotenv").config();
 
-const PORT = 3000;
+const app = express();
 
-const server = http.createServer((req, res) => {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+app.use(cors());
+app.use(express.json());
 
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
+// Servir arquivos estáticos da pasta public
+app.use(express.static(path.join(__dirname, "public")));
+
+// API REST
+app.get("/api", (req, res) => {
+  res.json({ message: "ConnectLife API rodando 🚀" });
+});
+
+// Exemplo de login (placeholder)
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Dados inválidos" });
   }
 
-  let filePath = req.url === '/' ? '/index.html' : req.url;
-  filePath = path.join(__dirname, filePath);
-
-  // Evita acesso fora do diretório
-  if (!filePath.startsWith(__dirname)) {
-    res.writeHead(403);
-    res.end('Acesso negado');
-    return;
-  }
-
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      res.writeHead(404);
-      res.end('Arquivo não encontrado');
-      return;
-    }
-
-    // Define o tipo de conteúdo
-    let contentType = 'text/plain';
-    if (filePath.endsWith('.html')) contentType = 'text/html';
-    else if (filePath.endsWith('.css')) contentType = 'text/css';
-    else if (filePath.endsWith('.js')) contentType = 'application/javascript';
-    else if (filePath.endsWith('.json')) contentType = 'application/json';
-    else if (filePath.endsWith('.png')) contentType = 'image/png';
-    else if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) contentType = 'image/jpeg';
-    else if (filePath.endsWith('.webp')) contentType = 'image/webp';
-
-    res.writeHead(200, { 'Content-Type': contentType });
-    res.end(data);
+  return res.json({
+    user: { email },
+    token: "fake-token-123"
   });
 });
 
-server.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
-  console.log(`📱 Abra seu navegador em http://localhost:${PORT}`);
+// Rota para carregar dados dos produtos
+app.get("/api/produtos", (req, res) => {
+  const produtos = require("./public/data/dados.json");
+  res.json(produtos);
+});
+
+// Rota padrão para SPA (Single Page Application)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server rodando na porta ${PORT}`);
+  console.log(`📱 Acesse: http://localhost:${PORT}`);
 });

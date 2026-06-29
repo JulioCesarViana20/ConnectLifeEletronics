@@ -1,0 +1,27 @@
+{
+  "name": "connectlife",
+  "version": "1.0.0",
+  "description": "A **ConnectLife** é uma loja virtual de tecnologia especializada na venda de smartphones, acessórios e dispositivos eletrônicos. O objetivo do projeto é oferecer uma plataforma moderna, rápida e intuitiva para proporcionar a melhor experiência de compra aos clientes.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JulioCesarViana20/ConnectLifeEletronics.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JulioCesarViana20/ConnectLifeEletronics/issues"
+  },
+  "homepage": "https://github.com/JulioCesarViana20/ConnectLifeEletronics#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mercadopago": "^3.1.0"
+  }
+}

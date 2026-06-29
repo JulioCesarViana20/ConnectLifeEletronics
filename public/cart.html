@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrinho - ConnectLife Store</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-mark"><img src="img/logo.png" alt="ConnectLife" /></span>
+        <div class="logo-text">
+          <strong>ConnectLife</strong>
+          <span>Loja de eletrônicos</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button class="btn-cart" id="cartBtn">
+          <img class="cart" src="img/cart.jpg" alt="Carrinho de compras">
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+      <nav class="main-nav">
+        <a href="index.html#intro">Início</a>
+        <a href="index.html#produtos">Produtos</a>
+        <a href="index.html#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="cart-container">
+      <div class="cart-page">
+        <div class="cart-header">
+          <h1>🛒 Seu Carrinho</h1>
+        </div>
+        <div id="cartContent">
+          <!-- Conteúdo do carrinho será inserido aqui -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="contato" class="site-footer">
+    <p>&copy; 2026 ConnectLife. Todos os direitos reservados.</p>
+  </footer>
+
+  <script src="js/cart.js"></script>
+</body>
+</html>
