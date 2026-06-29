@@ -1,49 +1,86 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
+
+const { MercadoPagoConfig, Preference } = require("mercadopago");
 
 const app = express();
+const PORT = 3000;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos da pasta public
-app.use(express.static(path.join(__dirname, "public")));
+// Arquivos estáticos (frontend)
+app.use(express.static(path.join(__dirname)));
 
-// API REST
-app.get("/api", (req, res) => {
-  res.json({ message: "ConnectLife API rodando 🚀" });
+// Cliente Mercado Pago
+const client = new MercadoPagoConfig({
+    accessToken: process.env.MP_ACCESS_TOKEN,
 });
 
-// Exemplo de login (placeholder)
-app.post("/api/login", (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Dados inválidos" });
-  }
-
-  return res.json({
-    user: { email },
-    token: "fake-token-123"
-  });
+// Rota principal (site)
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// Rota para carregar dados dos produtos
-app.get("/api/produtos", (req, res) => {
-  const produtos = require("./public/data/dados.json");
-  res.json(produtos);
+// 🔥 CRIAR PAGAMENTO (PIX + CARTÃO)
+app.post("/criar-pagamento", async (req, res) => {
+    try {
+        const { title, price, quantity } = req.body;
+
+        const preference = new Preference(client);
+
+        const result = await preference.create({
+            body: {
+                items: [
+                    {
+                        title: title || "Produto da ConnectLife",
+                        quantity: quantity || 1,
+                        unit_price: Number(price),
+                        currency_id: "BRL",
+                    },
+                ],
+
+                back_urls: {
+                    success: "http://localhost:3000/sucesso",
+                    failure: "http://localhost:3000/erro",
+                    pending: "http://localhost:3000/pendente",
+                },
+
+                auto_return: "approved",
+            },
+        });
+
+        // link do checkout do Mercado Pago
+        res.json({
+            id: result.id,
+            init_point: result.init_point,
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao criar pagamento" });
+    }
 });
 
-// Rota padrão para SPA (Single Page Application)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+// páginas simples de retorno
+app.get("/sucesso", (req, res) => {
+    res.send("Pagamento aprovado! ✅");
 });
 
-const PORT = process.env.PORT || 3000;
+app.get("/erro", (req, res) => {
+    res.send("Pagamento recusado ❌");
+});
 
+app.get("/pendente", (req, res) => {
+    res.send("Pagamento pendente ⏳");
+});
+
+// iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Server rodando na porta ${PORT}`);
-  console.log(`📱 Acesse: http://localhost:${PORT}`);
+    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

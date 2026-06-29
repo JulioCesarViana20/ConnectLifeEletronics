@@ -44,3 +44,32 @@ function renderizarCards(produtos) {
 
 // Carrega os produtos quando a página inicia
 document.addEventListener('DOMContentLoaded', carregarProdutos);
+
+// Função para comprar produto (integração Mercado Pago)
+async function comprarProduto(produto) {
+  try {
+    const response = await fetch("http://localhost:3000/criar-pagamento", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: produto.nome,
+        price: produto.preco,
+        quantity: 1,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.init_point) {
+      // Redireciona pro Mercado Pago
+      window.location.href = data.init_point;
+    } else {
+      alert("Erro ao processar pagamento. Tente novamente.");
+    }
+  } catch (erro) {
+    console.error('Erro ao criar pagamento:', erro);
+    alert("Erro ao conectar com o servidor de pagamento.");
+  }
+}
