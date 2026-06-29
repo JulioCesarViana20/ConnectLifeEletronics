@@ -14,8 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Arquivos estáticos (frontend)
-app.use(express.static(path.join(__dirname)));
+// Arquivos estáticos (frontend) - IMPORTANTE: servir da pasta public
+app.use(express.static(path.join(__dirname, "public")));
 
 // Cliente Mercado Pago
 const client = new MercadoPagoConfig({
@@ -24,7 +24,7 @@ const client = new MercadoPagoConfig({
 
 // Rota principal (site)
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
+    res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // 🔥 CRIAR PAGAMENTO (PIX + CARTÃO)
